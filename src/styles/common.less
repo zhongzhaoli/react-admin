@@ -1,0 +1,34 @@
+// Display
+@display: block, inline, inline-block, flex, none, inline-flex;
+each(@display, {
+  .d-@{value} {
+    display: @value;
+  }
+});
+
+@align: center, start, end, baseline, stretch;
+each(@align, {
+  .align-@{value} {
+    align-items: @value;
+  }
+});
+
+@justify: center, start, end, between, around;
+each(@justify, {
+  .justify-@{value} {
+    justify-content: @value;
+  }
+});
+
+@direction: row, row-reverse, column, column-reverse;
+each(@direction, {
+  .flex-@{value} {
+    flex-direction: @value;
+  }
+});
+
+.flex-center{
+  &:extend(.d-flex);
+  &:extend(.align-center);
+  &:extend(.justify-center);
+}
