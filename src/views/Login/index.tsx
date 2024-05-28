@@ -1,11 +1,12 @@
 import { PROJECT_NAME } from '../../constant/app';
 import LoginBg from '@/assets/login_bg.png';
-import { Form, Input, Checkbox, Button } from 'antd';
+import { Form, Input, Checkbox, Button, notification } from 'antd';
 import { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { useAppDispatch } from '@/store/hooks';
 import { fetchLogin } from '@/store/modules/user';
 import { LoginDto } from '@/api/login';
 import { useCallback, useState } from 'react';
+import { nowTimePeriod, timePeriodZh } from '@/utils/nowTimePeriod';
 
 // css
 import './index.less';
@@ -44,6 +45,10 @@ function LoginContainer(): JSX.Element {
     try {
       const values = await form.getFieldsValue();
       await logIn(values);
+      notification.success({
+        message: '登录成功',
+        description: `${timePeriodZh[nowTimePeriod()]}，欢迎回来`,
+      });
     } catch (error) {
       console.log('登录失败：', error);
     } finally {
