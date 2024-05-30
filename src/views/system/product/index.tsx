@@ -1,5 +1,5 @@
 function c() {
-  return <h1>12123213</h1>;
+  return <h1>product</h1>;
 }
 
 export default c;

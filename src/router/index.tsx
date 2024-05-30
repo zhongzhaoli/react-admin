@@ -1,44 +1,47 @@
-import { Routes, Route } from 'react-router-dom';
+import { RouteObject, useRoutes } from 'react-router-dom';
 import { lazy } from 'react';
 import { useEffect, useState } from 'react';
-import { routesComponentInstance } from './helper.ts';
-import { SyncDynamicRouteProp } from './types.ts';
+import { routesComponentInstance } from './helper.tsx';
 import store from '@/store';
 import { fetchUserInfo, selectToken } from '@/store/modules/user.ts';
 import { useAppDispatch } from '@/store/hooks.ts';
 import { getRoutes } from '@/api/user/index.ts';
 
 const Login = lazy(() => import('../views/Login/index.tsx'));
+// const ErrorPage404 = lazy(() => import('../views/errorPage/404.tsx'));
+const Layout = lazy(() => import('../layout/index.tsx'));
 
-function RouterCom(): JSX.Element {
-  const [routes, setRoutes] = useState<SyncDynamicRouteProp[]>([]);
+function RouterComponent() {
+  const [routes, setRoutes] = useState<RouteObject[]>([]);
   // 相当于前置守卫
   const dispatch = useAppDispatch();
   useEffect(() => {
+    const token = selectToken(store.getState());
+
     async function fetchData() {
-      const token = selectToken(store.getState());
-      if (token) {
-        // 获取个人信息
-        dispatch(fetchUserInfo());
-        const { datas } = await getRoutes();
-        setRoutes(routesComponentInstance(datas.data));
-      }
+      // 获取个人信息
+      await dispatch(fetchUserInfo());
+      // 获取路由信息
+      const { datas } = await getRoutes();
+      // 动态注册路由
+      setRoutes(routesComponentInstance(datas.data));
     }
-    fetchData();
+    if (token) {
+      fetchData();
+    }
   }, [dispatch]);
-  return (
-    <Routes>
-      <Route path="/login" element={<Login />}></Route>
-      {routes.map((route) => {
-        return (
-          <Route
-            key={route.id}
-            path={route.path}
-            Component={route.component}
-          ></Route>
-        );
-      })}
-    </Routes>
-  );
+  const element = useRoutes([
+    {
+      path: '/login',
+      element: <Login />,
+    },
+    {
+      path: '/',
+      element: <Layout />,
+      children: routes || [],
+    },
+  ]);
+  console.log(routes);
+  return element;
 }
-export default RouterCom;
+export default RouterComponent;

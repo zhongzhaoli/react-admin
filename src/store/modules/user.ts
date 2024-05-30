@@ -1,29 +1,27 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '..';
-import { UserInfo, UserState } from './types';
+import { UserState } from './types';
 import { loginApi, LoginDto } from '@/api/login';
 import { getUserInfo } from '@/api/user';
+import { getLocalStorage, setLocalStorage } from '@/utils/storage';
+import { TOKEN_KEY } from '@/constant/app';
 
 const initialState: UserState = {
-  token:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MTc0ODc3ODMsInVzZXJfaWQiOiI1MzM2MDM1ZWM3OTY0OWRmYTM0Yzk4ZTc5ODIyOTRkOCIsInVzZXJfbmFtZSI6Inp6bCIsInBhc3N3b3JkIjoiJDJiJDEyJC43VVY3Y0RBS2w4UGxXa2Mud1VUV2VFOHJlWEdLQ0RDZGZQMy9CSmhhWHEvamxOcHdxWElHIiwiZGVwYXJ0bWVudF9pZCI6MSwibGFzdF9sb2dpbiI6IjIwMjQtMDUtMjhUMTU6NTY6MDYiLCJhY2Nlc3NfY29kZSI6MCwidXBkYXRlX3RpbWUiOiIyMDI0LTA1LTI4VDE1OjU2OjA2IiwiYXV0aG9yaXphdGlvbiI6IiJ9.DHTjZjDuuTdrTE3VyC54qA5qp6UEr10ymnB-7H6aeq0',
+  token: getLocalStorage(TOKEN_KEY) || '',
   userInfo: null,
 };
 
 export const userSlice = createSlice({
   name: 'User',
   initialState,
-  reducers: {
-    setToken: (state, action: PayloadAction<string>) => {
-      state.token = action.payload;
-    },
-    setUserInfo: (state, action: PayloadAction<UserInfo>) => {
-      state.userInfo = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers(builder) {
     builder.addCase(fetchLogin.fulfilled, (state, action) => {
-      state.token = action.payload?.token || null;
+      const token = action.payload?.token || null;
+      if (token) {
+        state.token = token;
+        setLocalStorage(TOKEN_KEY, token);
+      }
     });
     builder.addCase(fetchUserInfo.fulfilled, (state, action) => {
       state.userInfo = action.payload || null;
@@ -53,5 +51,7 @@ export const fetchUserInfo = createAsyncThunk('user/userInfo', async () => {
 });
 
 export const selectToken = (state: RootState) => state.user.token;
+
+export const selectUserInfo = (state: RootState) => state.user.userInfo;
 
 export default userSlice.reducer;
