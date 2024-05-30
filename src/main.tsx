@@ -7,6 +7,8 @@ import RouterComponent from './router';
 
 import 'normalize.css';
 import './styles/index.less';
+import 'remixicon/fonts/remixicon.css';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Provider store={store}>

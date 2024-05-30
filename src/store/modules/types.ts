@@ -1,3 +1,6 @@
+import { SyncRouteProp } from '@/router/types';
+
+// User
 export interface UserInfo {
   access_code: number;
   authorization: string;
@@ -11,4 +14,9 @@ export interface UserInfo {
 export interface UserState {
   token: string | null;
   userInfo: UserInfo | null;
+}
+
+// Router
+export interface RouterState {
+  syncRouter: SyncRouteProp[];
 }

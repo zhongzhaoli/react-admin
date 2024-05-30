@@ -1,0 +1,10 @@
+:root {
+  /* Logo */
+  --logo-height: 60px;
+
+  /* Sidebar */
+  --sidebar-width: 230px;
+
+  /* Navbar */
+  --navbar-background-color: #fff;
+}

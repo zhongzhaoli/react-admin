@@ -5,7 +5,7 @@ import { routesComponentInstance } from './helper.tsx';
 import store from '@/store';
 import { fetchUserInfo, selectToken } from '@/store/modules/user.ts';
 import { useAppDispatch } from '@/store/hooks.ts';
-import { getRoutes } from '@/api/user/index.ts';
+import { fetchRouter } from '@/store/modules/router.ts';
 
 const Login = lazy(() => import('../views/Login/index.tsx'));
 // const ErrorPage404 = lazy(() => import('../views/errorPage/404.tsx'));
@@ -22,9 +22,11 @@ function RouterComponent() {
       // 获取个人信息
       await dispatch(fetchUserInfo());
       // 获取路由信息
-      const { datas } = await getRoutes();
-      // 动态注册路由
-      setRoutes(routesComponentInstance(datas.data));
+      const { payload } = await dispatch(fetchRouter());
+      if (payload) {
+        // 动态注册路由
+        setRoutes(routesComponentInstance(payload));
+      }
     }
     if (token) {
       fetchData();
@@ -41,7 +43,6 @@ function RouterComponent() {
       children: routes || [],
     },
   ]);
-  console.log(routes);
   return element;
 }
 export default RouterComponent;

@@ -14,14 +14,11 @@ export const routesComponentInstance = (
     };
     if (route.component) {
       if (route.component === 'Layout') {
-        if (route.children && route.children.length) {
-          obj.element = (
-            <Suspense>
-              <Outlet />
-              <Navigate to={route.children[0].path} replace />
-            </Suspense>
-          );
-        }
+        obj.element = (
+          <Suspense>
+            <Outlet />
+          </Suspense>
+        );
       } else {
         const dynamicViewsModules = import.meta.glob('../views/**/*.{vue,tsx}');
 
@@ -37,7 +34,18 @@ export const routesComponentInstance = (
       }
     }
     if (route.children && route.children.length) {
-      obj.children = routesComponentInstance(route.children);
+      const redirectList = [];
+      if (route.component === 'Layout') {
+        const defaultRedirect = {
+          path: '',
+          element: <Navigate to={route.children[0].path} replace />,
+        };
+        redirectList.push(defaultRedirect);
+      }
+      obj.children = [
+        ...redirectList,
+        ...routesComponentInstance(route.children),
+      ];
     }
     newRoutes.push(obj);
   });
